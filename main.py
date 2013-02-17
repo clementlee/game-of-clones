@@ -21,11 +21,16 @@ class PvPGame:
     dc = 2#defect-coop
     dd = 3#defect-defect
 
-    def __init__(self, cc = 1, cd = 2, dc = 2, dd = 3):
+    p1id = 0 #player ids
+    p2id = 0
+
+    def __init__(self, cc = 1, cd = 2, dc = 2, dd = 3, p1id = 0, p2id = 0):
         self.cc = cc #assign default values when initializing
         self.cd = cd
         self.dc = dc
         self.dd = dd
+        self.p1id = p1id
+        self.p2id = p2id
 
 class CoopGame:
     """A cooperative game in which the more people participating the more
@@ -34,9 +39,15 @@ class CoopGame:
     #two possibilities for each agent, symmetric game
     coop = 1.05 #the cooperation bonus
     defect = 1.03 #the defection bonus
-    def __init__(self, coop = 1.05, defect = 1.03):
+
+    idlist = []
+    def __init__(self, coop = 1.05, defect = 1.03, idlist = []):
         self.coop = coop
         self.defect = defect
+        idlist = []
+
+    def calcpayout(self):
+        pass
 
 class Agent:
     """The 'clone' of the simulation; each individual agent/actor keeps
@@ -44,19 +55,29 @@ class Agent:
 
     id = 0
     life = 100
+    posx = 0
+    posy = 0
     prev_enc = {}
     def __init__(self):
+        id = Agent.counter
+        Agent.counter += 1
+        Agent.map[id] = self; #maps id to self, allowing future lookup
         pass
 
     def update(self):
         """Updates the agent for every single iteration"""
-        pass
+        life -= 1
 
     def evalPvP(self, pvpgame):
         pass
 
     def evalCoop(self, coopgame):
         pass
+
+    def __eq__(self, other):
+        return self.id == other.id
+Agent.counter = 0; #lifetime counter of all Agents
+Agent.map = {}     #mapping from Agent id to actual Agent.
 
 def main():
     print "hi"
