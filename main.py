@@ -40,14 +40,21 @@ class CoopGame:
     coop = 1.05 #the cooperation bonus
     defect = 1.03 #the defection bonus
 
-    idlist = []
+    idlist = [] #members of the game
+    
     def __init__(self, coop = 1.05, defect = 1.03, idlist = []):
         self.coop = coop
         self.defect = defect
         idlist = []
 
     def calcpayout(self):
-        pass
+        for id in idlist:
+            if id in Agent.map: #check validity of id
+                agent = Agent.map[id]
+                agent.evalcoop(self) #do something with this evaluation
+            else: #should never happen
+                print "error: Agent "+str(id)+" is either dead or nonexistent."
+        
 
 class Agent:
     """The 'clone' of the simulation; each individual agent/actor keeps
@@ -55,9 +62,9 @@ class Agent:
 
     id = 0
     life = 100
-    posx = 0
+    posx = 0 #position along "game board"
     posy = 0
-    prev_enc = {}
+    prev_enc = {} #memory of previous encounters with others, keyed by Agent id
     def __init__(self):
         id = Agent.counter
         Agent.counter += 1
@@ -66,6 +73,8 @@ class Agent:
 
     def update(self):
         """Updates the agent for every single iteration"""
+        if life <= 0: #death
+            del Agent.map[id] #removing from lookup is equivalent to death
         life -= 1
 
     def evalPvP(self, pvpgame):
@@ -79,7 +88,7 @@ class Agent:
 Agent.counter = 0; #lifetime counter of all Agents
 Agent.map = {}     #mapping from Agent id to actual Agent.
 
-def main():
+def main(): #main method
     print "hi"
 
 if __name__ == '__main__':
