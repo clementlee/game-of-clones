@@ -1,7 +1,13 @@
 import random
 import multiprocessing
 import math
+import time
 
+def enum(*sequential, **named):
+    enums = dict(zip(sequential, range(len(sequential))), **named)
+    reverse = dict((value, key) for key, value in enums.iteritems())
+    enums['reverse_mapping'] = reverse
+    return type('Enum', (), enums)
 
 def normpdf(x, mu = 0.0, sigma = 1.0):
     """Returns the value of the normal (Gaussian) distribution value at a
@@ -45,10 +51,10 @@ class CoopGame:
     def __init__(self, coop = 1.05, defect = 1.03, idlist = []):
         self.coop = coop
         self.defect = defect
-        idlist = []
+        self.idlist = idlist
 
     def calcpayout(self):
-        for id in idlist:
+        for id in self.idlist:
             if id in Agent.map: #check validity of id
                 agent = Agent.map[id]
                 agent.evalcoop(self) #do something with this evaluation
@@ -60,36 +66,44 @@ class Agent:
     """The 'clone' of the simulation; each individual agent/actor keeps
     its own state and evaluating functions."""
 
+    
     id = 0
     life = 100
     posx = 0 #position along "game board"
     posy = 0
     prev_enc = {} #memory of previous encounters with others, keyed by Agent id
-    def __init__(self):
-        id = Agent.counter
+    def __init__(self, life = 100):
+        self.id = Agent.counter
         Agent.counter += 1
-        Agent.map[id] = self; #maps id to self, allowing future lookup
-        pass
+        Agent.map[self.id] = self; #maps id to self, allowing future lookup
+        self.life = life
 
     def update(self):
         """Updates the agent for every single iteration"""
-        if life <= 0: #death
-            del Agent.map[id] #removing from lookup is equivalent to death
-        life -= 1
+        if self.life <= 0: #death
+            del Agent.map[self.id] #removing from lookup is equivalent to death
+        self.life -= 1
 
-    def evalPvP(self, pvpgame):
+    def evalpvp(self, pvpgame):
         pass
 
-    def evalCoop(self, coopgame):
+    def evalcoop(self, coopgame):
         pass
 
     def __eq__(self, other):
         return self.id == other.id
 Agent.counter = 0; #lifetime counter of all Agents
 Agent.map = {}     #mapping from Agent id to actual Agent.
+Agent.statii = enum('NONE','COOP','PVP')
+Agent.colors = {}
+
+def simulation(pid):
+    print "Simulation #"+str(pid)+" beginning..."
 
 def main(): #main method
     print "hi"
+    numcpu = multiprocessing.cpu_count()
+    pool = multiprocessing.Pool(numcpu)
 
 if __name__ == '__main__':
     main()
