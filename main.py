@@ -54,12 +54,12 @@ class CoopGame:
         self.idlist = idlist
 
     def calcpayout(self):
-        for id in self.idlist:
-            if id in Agent.map: #check validity of id
-                agent = Agent.map[id]
+        for a_id in self.idlist:
+            if a_id in Agent.map: #check validity of id
+                agent = Agent.map[a_id]
                 agent.evalcoop(self) #do something with this evaluation
             else: #should never happen
-                print "error: Agent "+str(id)+" is either dead or nonexistent."
+                print "error: Agent "+str(a_id)+" is either dead or nonexistent."
         
 
 class Agent:
